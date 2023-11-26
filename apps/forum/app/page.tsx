@@ -20,6 +20,7 @@ function Gradient({
         className,
       ]
         .filter(Boolean)
+        .map((a) => a)
         .join(" ")}
     />
   );
