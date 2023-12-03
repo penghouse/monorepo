@@ -1,6 +1,5 @@
 import { LayoutProps } from '@/.next/types/app/dashboard/layout';
-import { ReactElement } from 'react';
-import SideNav from '../ui/dashboard/sidenav';
+import SideNav from '@/app/ui/dashboard/sidenav';
 
 export default function Layout({ children }: LayoutProps) {
   return (
