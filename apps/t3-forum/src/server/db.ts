@@ -8,7 +8,7 @@ const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
 
-const client = new Client({ url: env.DATABASE_URL });
+const client = new Client({ url: env.POSTGRES_URL });
 
 export const db =
   globalForPrisma.prisma ??
