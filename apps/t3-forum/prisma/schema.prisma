@@ -7,13 +7,13 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url = env("POSTGRES_PRISMA_URL") // uses connection pooling
-  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+    provider  = "postgresql"
+    url       = env("POSTGRES_PRISMA_URL") // uses connection pooling
+    directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
 }
 
 model Post {
-    id        Int      @id @default(autoincrement())
+    id        String   @id @default(cuid())
     name      String
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -72,4 +72,167 @@ model VerificationToken {
     expires    DateTime
 
     @@unique([identifier, token])
+}
+
+enum DeviceType {
+    Landline
+    Mobile
+}
+
+enum CallerType {
+    Interviewer
+    ARS
+}
+
+enum PhoneNumberType {
+    RDD
+    Virtual
+}
+
+model SurveyMethod {
+    id                String          @id @default(cuid())
+    device_type       DeviceType
+    caller_type       CallerType
+    phone_number_type PhoneNumberType
+    percentage        Float
+    response_rate     Float
+    survey            Survey?         @relation(fields: [survey_id], references: [id])
+    survey_id         String?
+}
+
+model SurveyOrg {
+    id         String   @id @default(cuid())
+    name       String   @unique
+    short_name String?
+    surveys    Survey[]
+}
+
+model ClientOrg {
+    id     String   @id @default(cuid())
+    name   String
+    type   String
+    Survey Survey[]
+}
+
+enum QuestionType {
+    PoliticianApproval
+    PartyApproval
+    PresidentApproval
+}
+
+model Party {
+    id              String          @id @default(cuid())
+    name            String          @unique
+    party_approvals PartyApproval[]
+    politicians     Politician[]
+    president       President?
+}
+
+model PartyApproval {
+    id                 String @id @default(cuid())
+    approval_rating    Float
+    disapproval_rating Float?
+
+    party                    Party                @relation(fields: [party_id], references: [id])
+    party_id                 String
+    party_approval_result    PartyApprovalResult? @relation(fields: [party_approval_result_id], references: [id])
+    party_approval_result_id String?
+}
+
+model PartyApprovalResult {
+    id        String          @id @default(cuid())
+    approvals PartyApproval[]
+
+    survey_result    SurveyResult @relation(fields: [survey_result_id], references: [id])
+    survey_result_id String       @unique
+}
+
+model Politician {
+    id       String @id @default(cuid())
+    name     String
+    party    Party  @relation(fields: [party_id], references: [id])
+    party_id String
+
+    politician_approval PoliticianApproval[]
+}
+
+model PoliticianApproval {
+    id                 String @id @default(cuid())
+    approval_rating    Float
+    disapproval_rating Float?
+
+    politician                    Politician                @relation(fields: [politician_id], references: [id])
+    politician_id                 String
+    politician_approval_result    PoliticianApprovalResult? @relation(fields: [politician_approval_result_id], references: [id])
+    politician_approval_result_id String?
+}
+
+model PoliticianApprovalResult {
+    id String @id @default(cuid())
+
+    approval PoliticianApproval[]
+
+    survey_result    SurveyResult @relation(fields: [survey_result_id], references: [id])
+    survey_result_id String       @unique
+}
+
+model President {
+    id       String @id @default(cuid())
+    name     String
+    party    Party  @relation(fields: [party_id], references: [id])
+    party_id String @unique
+
+    president_approval PresidentApprovalResult[]
+}
+
+model PresidentApprovalResult {
+    id                 String @id @default(cuid())
+    approval_rating    Float
+    disapproval_rating Float
+
+    survey_result    SurveyResult @relation(fields: [survey_result_id], references: [id])
+    survey_result_id String       @unique
+    president        President?   @relation(fields: [presidentId], references: [id])
+    presidentId      String?
+}
+
+model SurveyResult {
+    id       String       @id @default(cuid())
+    question String
+    type     QuestionType
+
+    politician_approval PoliticianApprovalResult?
+    party_approval      PartyApprovalResult?
+    president_approval  PresidentApprovalResult?
+    survey              Survey?                   @relation(fields: [survey_id], references: [id])
+    survey_id           String?
+}
+
+model SampleInfo {
+    id               String @id @default(cuid())
+    size             Int
+    characteristics  String
+    confidence_level Float
+    margin_of_error  Float
+    survey           Survey @relation(fields: [survey_id], references: [id])
+    survey_id        String @unique
+}
+
+model Survey {
+    id         String         @id @default(cuid())
+    title      String
+    start_date DateTime
+    end_date   DateTime
+    methods    SurveyMethod[]
+
+    survey_org    SurveyOrg @relation(fields: [survey_org_id], references: [id])
+    survey_org_id String
+
+    client_org    ClientOrg? @relation(fields: [clieng_org_id], references: [id])
+    clieng_org_id String?
+
+    sample_info    SampleInfo?
+    sample_info_id Int?
+
+    results SurveyResult[]
 }
