@@ -17,9 +17,9 @@ export default function Home() {
       </Head>
       <main className={styles.main}>
         <div className={styles.container}>
-          <h1 className={styles.title}>
-            Create <span className={styles.pinkSpan}>T3</span> App
-          </h1>
+          <a href="http://localhost:3000/surveys/cltbkt7ao0004144sec6x8w75">
+            <h1 className={styles.title}>Go to Example Survey</h1>
+          </a>
           <div className={styles.cardRow}>
             <Link
               className={styles.card}

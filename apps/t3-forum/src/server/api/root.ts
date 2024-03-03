@@ -1,3 +1,4 @@
+import { surveyRouter } from "./routers/survey";
 import { postRouter } from "src/server/api/routers/post";
 import { createTRPCRouter } from "src/server/api/trpc";
 
@@ -8,6 +9,7 @@ import { createTRPCRouter } from "src/server/api/trpc";
  */
 export const appRouter = createTRPCRouter({
   post: postRouter,
+  survey: surveyRouter,
 });
 
 // export type definition of API
