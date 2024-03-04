@@ -4,6 +4,12 @@ import { createServerSideHelpers } from "@trpc/react-query/server";
 import { appRouter } from "src/server/api/root";
 import superjson from "superjson";
 import { db } from "src/server/db";
+import SurveyHeader from "src/components/surveys/SurveyHeader";
+import SearchBar from "src/components/surveys/SearchBar";
+import Graph from "src/components/surveys/Graph";
+import InfoContainer from "src/components/surveys/InfoContainer";
+import Footer from "src/components/surveys/Footer";
+import { VStack } from "@chakra-ui/react";
 
 export const getStaticProps: GetStaticProps = async (context) => {
   const { surveyId } = context.params ?? {};
@@ -58,9 +64,12 @@ export default function Page(
   );
 
   return (
-    <div>
-      <h1>Survey Info</h1>
-      <pre>{JSON.stringify(survey, null, 2)}</pre>
-    </div>
+    <VStack gap={10}>
+      <SurveyHeader />
+      <SearchBar />
+      <Graph />
+      {survey && <InfoContainer survey={survey} />}
+      <Footer />
+    </VStack>
   );
 }
